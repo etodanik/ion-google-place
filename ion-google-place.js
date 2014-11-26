@@ -1,3 +1,11 @@
+/* Options Example
+*
+* options = {
+*        types: '(cities)',
+*        country: 'BG',
+*        language: 'bg_BG'
+*    }
+*/
 angular.module('ion-google-place', [])
     .directive('ionGooglePlace', [
         '$ionicTemplateLoader',
@@ -6,15 +14,37 @@ angular.module('ion-google-place', [])
         '$timeout',
         '$rootScope',
         '$document',
-        function($ionicTemplateLoader, $ionicBackdrop, $q, $timeout, $rootScope, $document) {
+        function ($ionicTemplateLoader, $ionicBackdrop, $q, $timeout, $rootScope, $document) {
             return {
                 require: '?ngModel',
                 restrict: 'E',
-                template: '<input type="text" readonly="readonly" class="ion-google-place" autocomplete="off">',
+                template: '<input type="text" readonly="readonly" class="ion-google-place" ng-click="onClick();$event.preventDefault();$event.stopPropagation();" autocomplete="off">',
                 replace: true,
-                link: function(scope, element, attrs, ngModel) {
+                scope: {
+                    model: '=ngModel',
+                    options: '=?'
+                },
+                link: function (scope, element, attrs, ngModel) {
                     scope.locations = [];
-                    var geocoder = new google.maps.Geocoder();
+                    var request = {};
+
+                    if (scope.options) {
+                        if (scope.options.types) {
+                            request.types = [];
+                            request.types.push(scope.options.types);
+                        }
+
+                        if (scope.options.country) {
+                            request.componentRestrictions = { country: scope.options.country };
+                        }
+
+                        if (scope.options.language) {
+                            request.language = scope.options.language;
+                        }
+                    }
+
+                    var service = new google.maps.places.AutocompleteService();
+
                     var searchEventTimeout = undefined;
 
                     var POPUP_TPL = [
@@ -31,7 +61,7 @@ angular.module('ion-google-place', [])
                             '<ion-content class="has-header has-header">',
                                 '<ion-list>',
                                     '<ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">',
-                                        '{{location.formatted_address}}',
+                                        '{{location.description}}',
                                     '</ion-item>',
                                 '</ion-list>',
                             '</ion-content>',
@@ -44,57 +74,55 @@ angular.module('ion-google-place', [])
                         appendTo: $document[0].body
                     });
 
-                    popupPromise.then(function(el){
+                    popupPromise.then(function (el) {
                         var searchInputElement = angular.element(el.element.find('input'));
 
-                        scope.selectLocation = function(location){
-                            ngModel.$setViewValue(location);
+                        scope.selectLocation = function (location) {
+                            ngModel.$setViewValue(location.description);
                             ngModel.$render();
                             el.element.css('display', 'none');
                             $ionicBackdrop.release();
                         };
 
-                        scope.$watch('searchQuery', function(query){
+                        scope.$watch('searchQuery', function (query) {
                             if (searchEventTimeout) $timeout.cancel(searchEventTimeout);
-                            searchEventTimeout = $timeout(function() {
-                                if(!query) return;
-                                if(query.length < 3);
-                                geocoder.geocode({ address: query }, function(results, status) {
-                                    if (status == google.maps.GeocoderStatus.OK) {
-                                        scope.$apply(function(){
-                                            scope.locations = results;
+                            searchEventTimeout = $timeout(function () {
+                                if (!query) return;
+
+                                request.input = query;
+                                service.getPlacePredictions(request, function (predictions, status) {
+                                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                                        scope.$apply(function () {
+                                            scope.locations = predictions;
                                         });
-                                    } else {
-                                        // @TODO: Figure out what to do when the geocoding fails
+                                    }
+                                    else {
+                                        // @TODO: Figure out what to do when the google places fails
                                     }
                                 });
                             }, 350); // we're throttling the input by 350ms to be nice to google's API
                         });
 
-                        var onClick = function(e){
-                            e.preventDefault();
-                            e.stopPropagation();
+                        scope.onClick = function (e) {
                             $ionicBackdrop.retain();
                             el.element.css('display', 'block');
                             searchInputElement[0].focus();
-                            setTimeout(function(){
+                            setTimeout(function () {
                                 searchInputElement[0].focus();
-                            },0);
+
+                            }, 0);
                         };
 
-                        var onCancel = function(e){
+                        var onCancel = function (e) {
                             scope.searchQuery = '';
                             $ionicBackdrop.release();
                             el.element.css('display', 'none');
                         };
 
-                        element.bind('click', onClick);
-                        element.bind('touchend', onClick);
-
                         el.element.find('button').bind('click', onCancel);
                     });
 
-                    if(attrs.placeholder){
+                    if (attrs.placeholder) {
                         element.attr('placeholder', attrs.placeholder);
                     }
 
@@ -108,8 +136,8 @@ angular.module('ion-google-place', [])
                         return viewValue;
                     });
 
-                    ngModel.$render = function(){
-                        if(!ngModel.$viewValue){
+                    ngModel.$render = function () {
+                        if (!ngModel.$viewValue) {
                             element.val('');
                         } else {
                             element.val(ngModel.$viewValue.formatted_address || '');
