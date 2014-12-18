@@ -59,7 +59,10 @@ angular.module('ion-google-place', [])
                             searchEventTimeout = $timeout(function() {
                                 if(!query) return;
                                 if(query.length < 3);
-                                geocoder.geocode({ address: query }, function(results, status) {
+
+                                var req = scope.geocodeOptions || {};
+                                req.address = query;
+                                geocoder.geocode(req, function(results, status) {
                                     if (status == google.maps.GeocoderStatus.OK) {
                                         scope.$apply(function(){
                                             scope.locations = results;
