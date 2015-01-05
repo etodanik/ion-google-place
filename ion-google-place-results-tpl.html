@@ -1,0 +1,20 @@
+<div class="ion-google-place-container">
+    <div class="bar bar-header item-input-inset">
+        <label class="item-input-wrapper">
+            <i class="icon ion-ios7-search placeholder-icon"></i>
+            <input class="google-place-search" type="search" ng-model="searchQuery"
+                   placeholder="Enter an address, place or ZIP code">
+        </label>
+        <button class="button button-clear">
+            Cancel
+        </button>
+    </div>
+    <ion-content class="has-header has-header">
+        <ion-list>
+            <ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">
+                <!--formatted_address is used by Geocode Service, description by Places Service-->
+                {{location.formatted_address || location.description }}
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</div>
