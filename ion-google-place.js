@@ -2,17 +2,20 @@ angular.module('ion-google-place', [])
     .directive('ionGooglePlace', [
         '$ionicTemplateLoader',
         '$ionicBackdrop',
+        '$ionicPlatform',
         '$q',
         '$timeout',
         '$rootScope',
         '$document',
-        function($ionicTemplateLoader, $ionicBackdrop, $q, $timeout, $rootScope, $document) {
+        function($ionicTemplateLoader, $ionicBackdrop, $ionicPlatform, $q, $timeout, $rootScope, $document) {
             return {
                 require: '?ngModel',
                 restrict: 'E',
                 template: '<input type="text" readonly="readonly" class="ion-google-place" autocomplete="off">',
                 replace: true,
                 link: function(scope, element, attrs, ngModel) {
+                    var unbindBackButtonAction;
+
                     scope.locations = [];
                     var geocoder = new google.maps.Geocoder();
                     var searchEventTimeout = undefined;
@@ -52,6 +55,11 @@ angular.module('ion-google-place', [])
                             ngModel.$render();
                             el.element.css('display', 'none');
                             $ionicBackdrop.release();
+
+                            if (unbindBackButtonAction) {
+                                unbindBackButtonAction();
+                                unbindBackButtonAction = null;
+                            }
                         };
 
                         scope.$watch('searchQuery', function(query){
@@ -77,7 +85,10 @@ angular.module('ion-google-place', [])
                         var onClick = function(e){
                             e.preventDefault();
                             e.stopPropagation();
+
                             $ionicBackdrop.retain();
+                            unbindBackButtonAction = $ionicPlatform.registerBackButtonAction(closeOnBackButton, 250);
+
                             el.element.css('display', 'block');
                             searchInputElement[0].focus();
                             setTimeout(function(){
@@ -89,7 +100,24 @@ angular.module('ion-google-place', [])
                             scope.searchQuery = '';
                             $ionicBackdrop.release();
                             el.element.css('display', 'none');
+
+                            if (unbindBackButtonAction){
+                                unbindBackButtonAction();
+                                unbindBackButtonAction = null;
+                            }
                         };
+
+                        closeOnBackButton = function(e){
+                            e.preventDefault();
+
+                            el.element.css('display', 'none');
+                            $ionicBackdrop.release();
+
+                            if (unbindBackButtonAction){
+                                unbindBackButtonAction();
+                                unbindBackButtonAction = null;
+                            }
+                        }
 
                         element.bind('click', onClick);
                         element.bind('touchend', onClick);
@@ -118,6 +146,13 @@ angular.module('ion-google-place', [])
                             element.val(ngModel.$viewValue.formatted_address || '');
                         }
                     };
+
+                    scope.$on("$destroy", function(){
+                        if (unbindBackButtonAction){
+                            unbindBackButtonAction();
+                            unbindBackButtonAction = null;
+                        }
+                    });
                 }
             };
         }
