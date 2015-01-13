@@ -12,6 +12,9 @@ angular.module('ion-google-place', [])
                 restrict: 'E',
                 template: '<input type="text" readonly="readonly" class="ion-google-place" autocomplete="off">',
                 replace: true,
+                scope: {
+                    ngModel: '=?'
+                },
                 link: function(scope, element, attrs, ngModel) {
                     scope.locations = [];
                     var geocoder = new google.maps.Geocoder();
