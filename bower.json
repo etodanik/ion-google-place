@@ -6,7 +6,10 @@
     "Danny Povolotski <dannypovolotski@gmail.com>"
   ],
   "description": "Ionic directive for a location field (using google maps geocoding)",
-  "main": "ion-google-place.js",
+  "main": [
+    "ion-google-place.js",
+    "ion-google-place.css"
+  ],
   "keywords": [
     "ionic",
     "maps",
