@@ -14,7 +14,8 @@ angular.module('ion-google-place', [])
                 template: '<input type="text" readonly="readonly" class="ion-google-place" autocomplete="off">',
                 replace: true,
                 scope: {
-                    ngModel: '=?'
+                    ngModel: '=?',
+                    geocodeOptions: '='
                 },
                 link: function(scope, element, attrs, ngModel) {
                     var unbindBackButtonAction;
