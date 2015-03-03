@@ -55,8 +55,7 @@ angular.module('ion-google-place', [])
                         var searchInputElement = angular.element(el.element.find('input'));
 
                         scope.selectLocation = function(location){
-                            ngModel.$setViewValue(location);
-                            ngModel.$render();
+                            scope.ngModel = location;
                             el.element.css('display', 'none');
                             $ionicBackdrop.release();
 
@@ -121,7 +120,7 @@ angular.module('ion-google-place', [])
                                 unbindBackButtonAction();
                                 unbindBackButtonAction = null;
                             }
-                        }
+                        };
 
                         element.bind('click', onClick);
                         element.bind('touchend', onClick);
@@ -134,22 +133,14 @@ angular.module('ion-google-place', [])
                     }
 
 
-                    ngModel.$formatters.unshift(function (modelValue) {
-                        if (!modelValue) return '';
-                        return modelValue;
-                    });
-
-                    ngModel.$parsers.unshift(function (viewValue) {
-                        return viewValue;
-                    });
-
-                    ngModel.$render = function(){
-                        if(!ngModel.$viewValue){
-                            element.val('');
-                        } else {
-                            element.val(ngModel.$viewValue.formatted_address || '');
+                    ngModel.$formatters.push(function (modelValue) {
+                        if (!modelValue) {
+                            return '';
                         }
-                    };
+                        else {
+                            return modelValue.formatted_address;
+                        }
+                    });
 
                     scope.$on("$destroy", function(){
                         if (unbindBackButtonAction){
