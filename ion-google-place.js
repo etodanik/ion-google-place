@@ -25,7 +25,7 @@ angular.module('ion-google-place', [])
                     var searchEventTimeout = undefined;
 
                     var POPUP_TPL = [
-                        '<div class="ion-google-place-container">',
+                        '<div class="ion-google-place-container modal">',
                             '<div class="bar bar-header item-input-inset">',
                                 '<label class="item-input-wrapper">',
                                     '<i class="icon ion-ios7-search placeholder-icon"></i>',
