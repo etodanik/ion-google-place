@@ -28,5 +28,19 @@ angular.module('myApp', [
 ```
 
 That's pretty much it. Now you can use the directive like so:
-`<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" />`
+```html
+<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location"></ion-google-place>
+```
 
+#Customisation
+
+You can specify `data-search-placeholder` and `data-label-cancel` to customise text in search input and cancel button.
+
+Like so:
+```html
+<ion-google-place
+  placeholder="Enter an address, Apt# and ZIP"
+  data-search-placeholder="Type your search"
+  data-label-cancel="back"
+  ng-model="location"></ion-google-place>
+```
