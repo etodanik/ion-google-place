@@ -37,6 +37,9 @@ angular.module('ion-google-place', [])
                             '</div>',
                             '<ion-content class="has-header has-header">',
                                 '<ion-list>',
+                                    '<ion-item type="item-text-wrap" ng-click="setCurrentLocation()" ng-if="navigator.geolocation">',
+                                        'get current location',
+                                    '</ion-item>',
                                     '<ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">',
                                         '{{location.formatted_address}}',
                                     '</ion-item>',
@@ -64,6 +67,26 @@ angular.module('ion-google-place', [])
                                 unbindBackButtonAction();
                                 unbindBackButtonAction = null;
                             }
+                        };
+                        
+                        scope.setCurrentLocation = function(){
+                            var location = {
+                                formatted_address: 'getting current location...'
+                            };
+                            ngModel.$setViewValue(location);
+                            element.attr('value', location.formatted_address);
+                            ngModel.$render();
+                            el.element.css('display', 'none');
+                            $ionicBackdrop.release();
+                            getLocation()
+                              .then(reverseGeocoding)
+                              .then(function(location){
+                                  ngModel.$setViewValue(location);
+                                  element.attr('value', location.formatted_address);
+                                  ngModel.$render();
+                                  el.element.css('display', 'none');
+                                  $ionicBackdrop.release();
+                              });
                         };
 
                         scope.$watch('searchQuery', function(query){
@@ -150,6 +173,36 @@ angular.module('ion-google-place', [])
                             element.val(ngModel.$viewValue.formatted_address || '');
                         }
                     };
+                    
+                    function getLocation() {
+                        return $q(function (resolve, reject) {
+                            navigator.geolocation.getCurrentPosition(function (position) {
+                                resolve(position);
+                            }, function (error) {
+                                reject(error);
+                            });
+                        });
+                    }
+
+                    function reverseGeocoding(location) {
+                        return $q(function (resolve, reject) {
+                            var latlng = {
+                                lat: location.coords.latitude,
+                                lng: location.coords.longitude
+                            };
+                            geocoder.geocode({'location': latlng}, function (results, status) {
+                                if (status == google.maps.GeocoderStatus.OK) {
+                                    if (results[1]) {
+                                        resolve(results[1]);
+                                    } else {
+                                        resolve(results[0])
+                                    }
+                                } else {
+                                    // TODO in case of error
+                                }
+                            })
+                        });
+                    }
 
                     scope.$on("$destroy", function(){
                         if (unbindBackButtonAction){
