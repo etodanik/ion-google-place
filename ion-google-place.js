@@ -43,6 +43,12 @@ angular.module('ion-google-place', [])
                                     '<ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">',
                                         '{{location.formatted_address}}',
                                     '</ion-item>',
+                                    '<ion-item type="item-text-wrap" class="item-location">',
+                                    '<div style="height:16px;">',
+                                        '<span style="display: inline-block;height: 100%;vertical-align: middle;"></span>',
+                                        '<img ng-src="{{attributionLogo}}">',
+                                    '</div>',
+                                    '</ion-item>',
                                 '</ion-list>',
                             '</ion-content>',
                         '</div>'
@@ -56,6 +62,8 @@ angular.module('ion-google-place', [])
 
                     popupPromise.then(function(el){
                         var searchInputElement = angular.element(el.element.find('input'));
+
+                        scope.attributionLogo = "https://developers.google.com/places/documentation/images/powered-by-google-on-white.png";
                         
                         scope.geolocationAvailable = !!navigator.geolocation;
 
