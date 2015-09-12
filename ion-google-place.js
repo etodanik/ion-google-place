@@ -37,7 +37,7 @@ angular.module('ion-google-place', [])
                             '</div>',
                             '<ion-content class="has-header has-header">',
                                 '<ion-list>',
-                                    '<ion-item type="item-text-wrap" ng-click="setCurrentLocation()" ng-if="navigator.geolocation">',
+                                    '<ion-item type="item-text-wrap" class="item-location" ng-click="setCurrentLocation()" ng-if="navigator.geolocation">',
                                         'Use current location',
                                     '</ion-item>',
                                     '<ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">',
