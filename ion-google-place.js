@@ -57,7 +57,7 @@ angular.module('ion-google-place', [])
                     popupPromise.then(function(el){
                         var searchInputElement = angular.element(el.element.find('input'));
                         
-                        $scope.geoLocationAvailable = !!navigator.geolocation;
+                        scope.geoLocationAvailable = !!navigator.geolocation;
 
                         scope.selectLocation = function(location){
                             ngModel.$setViewValue(location);
