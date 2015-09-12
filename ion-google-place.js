@@ -88,6 +88,10 @@ angular.module('ion-google-place', [])
                             ngModel.$render();
                             el.element.css('display', 'none');
                             $ionicBackdrop.release();
+                            if (unbindBackButtonAction) {
+                                unbindBackButtonAction();
+                                unbindBackButtonAction = null;
+                            }
                             getLocation()
                               .then(reverseGeocoding)
                               .then(function(location){
