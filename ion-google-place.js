@@ -7,6 +7,7 @@ angular.module('ion-google-place', [])
         '$timeout',
         '$rootScope',
         '$document',
+        'Card'
         function($ionicTemplateLoader, $ionicBackdrop, $ionicPlatform, $q, $timeout, $rootScope, $document) {
             return {
                 require: '?ngModel',
@@ -100,7 +101,14 @@ angular.module('ion-google-place', [])
                                   ngModel.$render();
                                   el.element.css('display', 'none');
                                   $ionicBackdrop.release();
-                              });
+                              })
+                              .catch(function(error){
+                                  Card.sorryCurrentLocationCard(scope);
+                                  ngModel.$setViewValue(null);
+                                  ngModel.$render();
+                                  el.element.css('display', 'none');
+                                  $ionicBackdrop.release();
+                            });
                         };
 
                         scope.$watch('searchQuery', function(query){
@@ -193,6 +201,7 @@ angular.module('ion-google-place', [])
                             navigator.geolocation.getCurrentPosition(function (position) {
                                 resolve(position);
                             }, function (error) {
+                                error.from = 'getLocation';
                                 reject(error);
                             });
                         });
@@ -212,8 +221,12 @@ angular.module('ion-google-place', [])
                                         resolve(results[0])
                                     }
                                 } else {
-                                    // TODO in case of error
-                                }
+                                    var error = {
+                                    status: status,
+                                    from: 'reverseGeocoding'
+                                    };
+                                    reject(error);
+                                }   
                             })
                         });
                     }
