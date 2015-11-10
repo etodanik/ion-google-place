@@ -157,6 +157,10 @@ angular.module('ion-google-place', [])
                             unbindBackButtonAction = null;
                         }
                     });
+                                        
+                    scope.$watch('ngModel.formatted_address', function() {
+                        ngModel.$render();
+                    });
                 }
             };
         }
