@@ -15,7 +15,8 @@ angular.module('ion-google-place', [])
                 replace: true,
                 scope: {
                     ngModel: '=?',
-                    geocodeOptions: '='
+                    geocodeOptions: '=',
+                    initValue: '='
                 },
                 link: function(scope, element, attrs, ngModel) {
                     var unbindBackButtonAction;
@@ -121,7 +122,7 @@ angular.module('ion-google-place', [])
                                 unbindBackButtonAction();
                                 unbindBackButtonAction = null;
                             }
-                        }
+                        };
 
                         element.bind('click', onClick);
                         element.bind('touchend', onClick);
@@ -150,6 +151,11 @@ angular.module('ion-google-place', [])
                             element.val(ngModel.$viewValue.formatted_address || '');
                         }
                     };
+
+                    if (scope.initValue) {
+                        ngModel.$setViewValue(scope.initValue);
+                        ngModel.$render();
+                    }
 
                     scope.$on("$destroy", function(){
                         if (unbindBackButtonAction){
