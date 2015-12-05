@@ -25,6 +25,12 @@ angular.module('ion-google-place', [])
                     var geocoder = new google.maps.Geocoder();
                     var searchEventTimeout = undefined;
 
+                    scope.displayCurrentLocation = false;
+                    scope.currentLocation = scope.currentLocation === "true"? true:false;
+                    
+                    if(!!navigator.geolocation && scope.currentLocation){
+                        scope.displayCurrentLocation = true;
+                    }
                     var POPUP_TPL = [
                         '<div class="ion-google-place-container modal">',
                             '<div class="bar bar-header item-input-inset">',
