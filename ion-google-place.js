@@ -64,6 +64,7 @@ angular.module('ion-google-place', [])
                                 unbindBackButtonAction();
                                 unbindBackButtonAction = null;
                             }
+                            scope.$emit('ionGooglePlaceSetLocation',location);
                         };
 
                         scope.$watch('searchQuery', function(query){
