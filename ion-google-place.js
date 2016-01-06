@@ -15,7 +15,8 @@ angular.module('ion-google-place', [])
                 replace: true,
                 scope: {
                     ngModel: '=?',
-                    geocodeOptions: '='
+                    geocodeOptions: '=',
+                    currentLocation: '@'
                 },
                 link: function(scope, element, attrs, ngModel) {
                     var unbindBackButtonAction;
@@ -24,6 +25,12 @@ angular.module('ion-google-place', [])
                     var geocoder = new google.maps.Geocoder();
                     var searchEventTimeout = undefined;
 
+                    scope.displayCurrentLocation = false;
+                    scope.currentLocation = scope.currentLocation === "true"? true:false;
+                    
+                    if(!!navigator.geolocation && scope.currentLocation){
+                        scope.displayCurrentLocation = true;
+                    }
                     var POPUP_TPL = [
                         '<div class="ion-google-place-container modal">',
                             '<div class="bar bar-header item-input-inset">',
@@ -37,6 +44,9 @@ angular.module('ion-google-place', [])
                             '</div>',
                             '<ion-content class="has-header has-header">',
                                 '<ion-list>',
+                                    '<ion-item type="item-text-wrap" ng-click="setCurrentLocation()" ng-if="displayCurrentLocation">',
+                                        'Use current location',
+                                    '</ion-item>',
                                     '<ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">',
                                         '{{location.formatted_address}}',
                                     '</ion-item>',
@@ -65,6 +75,46 @@ angular.module('ion-google-place', [])
                                 unbindBackButtonAction = null;
                             }
                             scope.$emit('ionGooglePlaceSetLocation',location);
+                        };
+
+                        scope.setCurrentLocation = function(){
+                            var location = {
+                                formatted_address: 'getting current location...'
+                            };
+                            ngModel.$setViewValue(location);
+                            ngModel.$render();
+                            el.element.css('display', 'none');
+                            $ionicBackdrop.release();
+                            getLocation()
+                                .then(reverseGeocoding)
+                                .then(function(location){
+                                    ngModel.$setViewValue(location);
+                                    element.attr('value', location.formatted_address);
+                                    ngModel.$render();
+                                    el.element.css('display', 'none');
+                                    $ionicBackdrop.release();
+                                })
+                                .catch(function(error){
+                                    console.log('erreur catch',error);
+                                    //if(error.from == 'getLocation'){
+                                    //    getLocationError(error);
+                                    //} else {
+                                    //    //TODO when error from reverse geocode
+                                    //}
+                                    var location = {
+                                        formatted_address: 'Error in getting current location'
+                                    };
+                                    ngModel.$setViewValue(location);
+                                    ngModel.$render();
+                                    el.element.css('display', 'none');
+                                    $ionicBackdrop.release();
+                                    $timeout(function(){
+                                        ngModel.$setViewValue(null);
+                                        ngModel.$render();
+                                        el.element.css('display', 'none');
+                                        $ionicBackdrop.release();
+                                    }, 2000);
+                                });
                         };
 
                         scope.$watch('searchQuery', function(query){
@@ -158,6 +208,41 @@ angular.module('ion-google-place', [])
                             unbindBackButtonAction = null;
                         }
                     });
+
+                    function getLocation() {
+                        return $q(function (resolve, reject) {
+                            navigator.geolocation.getCurrentPosition(function (position) {
+                                resolve(position);
+                            }, function (error) {
+                                error.from = 'getLocation';
+                                reject(error);
+                            });
+                        });
+                    }
+
+                    function reverseGeocoding(location) {
+                        return $q(function (resolve, reject) {
+                            var latlng = {
+                                lat: location.coords.latitude,
+                                lng: location.coords.longitude
+                            };
+                            geocoder.geocode({'location': latlng}, function (results, status) {
+                                if (status == google.maps.GeocoderStatus.OK) {
+                                    if (results[1]) {
+                                        resolve(results[1]);
+                                    } else {
+                                        resolve(results[0])
+                                    }
+                                } else {
+                                    var error = {
+                                        status: status,
+                                        from: 'reverseGeocoding'
+                                    };
+                                    reject(error);
+                                }
+                            })
+                        });
+                    }
                 }
             };
         }
