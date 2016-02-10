@@ -187,6 +187,8 @@ angular.module('ion-google-place', [])
 
                     ngModel.$formatters.unshift(function (modelValue) {
                         if (!modelValue) return '';
+                        if (modelValue == "[object Object]") // Ionic string formatter lost model data
+                          return ngModel.$modelValue;
                         return modelValue;
                     });
 
