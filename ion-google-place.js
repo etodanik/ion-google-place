@@ -7,7 +7,8 @@ angular.module('ion-google-place', [])
         '$timeout',
         '$rootScope',
         '$document',
-        function($ionicTemplateLoader, $ionicBackdrop, $ionicPlatform, $q, $timeout, $rootScope, $document) {
+        '$http',
+        function($ionicTemplateLoader, $ionicBackdrop, $ionicPlatform, $q, $timeout, $rootScope, $document, $http) {
             return {
                 require: '?ngModel',
                 restrict: 'E',
@@ -16,7 +17,9 @@ angular.module('ion-google-place', [])
                 scope: {
                     ngModel: '=?',
                     geocodeOptions: '=',
-                    currentLocation: '@'
+                    currentLocation: '@',
+                    searchType: '@',
+                    googleKey: '@'
                 },
                 link: function(scope, element, attrs, ngModel) {
                     var unbindBackButtonAction;
@@ -31,12 +34,33 @@ angular.module('ion-google-place', [])
                     if(!!navigator.geolocation && scope.currentLocation){
                         scope.displayCurrentLocation = true;
                     }
+                    var placeholderForSearch;
+                    if(scope.searchType === 'geocode') {
+                        placeholderForSearch = 'Enter a geocode input';
+                    }
+                    else if(scope.searchType === 'address') {
+                        placeholderForSearch = 'Enter an address';
+                    }
+                    else if(scope.searchType === 'establishment') {
+                        placeholderForSearch = 'Enter the name of an establishment';
+                    }
+                    else if(scope.searchType === '(cities)') {
+                        placeholderForSearch = 'Search in a city';
+                    }
+                    else if(scope.searchType === '(regions)') {
+                        placeholderForSearch = 'Search in a region';
+                    }
+                    else {
+                        //set to null because the input is invalid
+                        scope.searchType = null;
+                        placeholderForSearch = 'Search'
+                    }
                     var POPUP_TPL = [
                         '<div class="ion-google-place-container modal">',
                             '<div class="bar bar-header item-input-inset">',
                                 '<label class="item-input-wrapper">',
                                     '<i class="icon ion-ios7-search placeholder-icon"></i>',
-                                    '<input class="google-place-search" type="search" ng-model="searchQuery" placeholder="' + (attrs.searchPlaceholder || 'Enter an address, place or ZIP code') + '">',
+                                    '<input class="google-place-search" type="search" ng-model="searchQuery" placeholder="' + (attrs.searchPlaceholder || placeholderForSearch) + '">',
                                 '</label>',
                                 '<button class="button button-clear">',
                                     attrs.labelCancel || 'Cancel',
@@ -48,7 +72,7 @@ angular.module('ion-google-place', [])
                                         'Use current location',
                                     '</ion-item>',
                                     '<ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">',
-                                        '{{location.formatted_address}}',
+                                        '{{location.description}}',
                                     '</ion-item>',
                                 '</ion-list>',
                             '</ion-content>',
@@ -65,6 +89,7 @@ angular.module('ion-google-place', [])
                         var searchInputElement = angular.element(el.element.find('input'));
 
                         scope.selectLocation = function(location){
+                            //console.log("location", location);
                             ngModel.$setViewValue(location);
                             ngModel.$render();
                             el.element.css('display', 'none');
@@ -74,6 +99,7 @@ angular.module('ion-google-place', [])
                                 unbindBackButtonAction();
                                 unbindBackButtonAction = null;
                             }
+                            attrs.placeholder = location.description;
                             scope.$emit('ionGooglePlaceSetLocation',location);
                         };
 
@@ -89,7 +115,7 @@ angular.module('ion-google-place', [])
                                 .then(reverseGeocoding)
                                 .then(function(location){
                                     ngModel.$setViewValue(location);
-                                    element.attr('value', location.formatted_address);
+                                    element.attr('value', location.description);
                                     ngModel.$render();
                                     el.element.css('display', 'none');
                                     $ionicBackdrop.release();
@@ -123,6 +149,7 @@ angular.module('ion-google-place', [])
                                 if(!query) return;
                                 if(query.length < 3);
 
+                                /*
                                 var req = scope.geocodeOptions || {};
                                 req.address = query;
                                 geocoder.geocode(req, function(results, status) {
@@ -134,6 +161,34 @@ angular.module('ion-google-place', [])
                                         // @TODO: Figure out what to do when the geocoding fails
                                     }
                                 });
+                                */
+                                if(scope.googleKey) {
+                                    var locationsRequest;
+                                    if (scope.searchType) {
+                                        //console.log("scope.searchType", scope.searchType);
+                                        locationsRequest = $http({
+                                            method: "post",
+                                            url: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + query + "&types=" + scope.searchType + "&key=" + scope.googleKey
+                                        });
+                                    }
+                                    else {
+                                        locationsRequest = $http({
+                                            method: "post",
+                                            url: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + query + "&key=" + scope.googleKey
+                                        });
+                                    }
+
+                                    locationsRequest.success(function (data) {
+                                        //console.log("data", data);
+                                        //scope.$apply(function(){
+                                        scope.locations = data.predictions;
+                                        //});
+                                    });
+                                }
+                                else {
+                                    console.log("Google api key required!");
+                                }
+
                             }, 350); // we're throttling the input by 350ms to be nice to google's API
                         });
 
