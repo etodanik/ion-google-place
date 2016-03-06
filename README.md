@@ -1,6 +1,8 @@
 ion-google-place
 ================
 
+If you want to use this feature more securely, use branch server-side-code-required
+
 Ionic directive for a location dropdown that utilizes google maps
 
 ![Animated demo](https://github.com/israelidanny/ion-google-place/raw/master/demo.gif)
