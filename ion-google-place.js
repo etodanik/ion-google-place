@@ -68,7 +68,6 @@ angular.module('ion-google-place', [])
                         var searchInputElement = angular.element(el.element.find('input'));
 
                         scope.setInputLocation = function(){
-                            console.log("searchInputElement: "+searchInputElement.val());
                             var location = {
                                 formatted_address:searchInputElement.val()
                             };
@@ -77,7 +76,6 @@ angular.module('ion-google-place', [])
                             ngModel.$render();
                             el.element.css('display', 'none');
                             $ionicBackdrop.release();
-
                         };
 
                         scope.selectLocation = function(location){
