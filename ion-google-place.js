@@ -44,6 +44,9 @@ angular.module('ion-google-place', [])
                             '</div>',
                             '<ion-content class="has-header has-header">',
                                 '<ion-list>',
+                                    '<ion-item type="item-text-wrap" ng-click="setInputLocation()">',
+                                        'Use current input',
+                                    '</ion-item>',
                                     '<ion-item type="item-text-wrap" ng-click="setCurrentLocation()" ng-if="displayCurrentLocation">',
                                         'Use current location',
                                     '</ion-item>',
@@ -63,6 +66,19 @@ angular.module('ion-google-place', [])
 
                     popupPromise.then(function(el){
                         var searchInputElement = angular.element(el.element.find('input'));
+
+                        scope.setInputLocation = function(){
+                            console.log("searchInputElement: "+searchInputElement.val());
+                            var location = {
+                                formatted_address:searchInputElement.val()
+                            };
+                            ngModel.$setViewValue(location);
+                            element.attr('value', location.formatted_address);
+                            ngModel.$render();
+                            el.element.css('display', 'none');
+                            $ionicBackdrop.release();
+
+                        };
 
                         scope.selectLocation = function(location){
                             ngModel.$setViewValue(location);
@@ -172,7 +188,7 @@ angular.module('ion-google-place', [])
                                 unbindBackButtonAction();
                                 unbindBackButtonAction = null;
                             }
-                        }
+                        };
 
                         element.bind('click', onClick);
                         element.bind('touchend', onClick);
