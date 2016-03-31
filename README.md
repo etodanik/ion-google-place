@@ -1,25 +1,37 @@
 ion-google-place
 ================
 
-Ionic directive for a location dropdown that utilizes google maps
+An Ionic directive that adds an autocomplete location popup/overlay search menu, using google's geocoding API.
+The directive also returns the full geocode result object.
 
 ![Animated demo](https://github.com/israelidanny/ion-google-place/raw/master/demo.gif)
 
 This is a simple directive for an autocomplete overlay location field built for Ionic Framework.
 
-#Installation
+# Installation
 
-Installation should be dead simple, you can grab a copy from bower:
+### Bower
 ```bash
 bower install ion-google-place
 ```
 
-Or clone this repository.
+### OR Bower from a specific github commit (NOTE: As github repo releases may not always be up to date)
+```bash
+bower install git://github.com/israelidanny/ion-google-place#<CommitId>
+```
 
-For the geolocation service to work, you'll need to have Google Maps javascript API somewhere in your HEAD tag:
+### Implementing into Ionic
+
+For the geolocation service to work, you'll need to have Google Maps javascript API in your HEAD/Index.html:
+
 `<script src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>`
 
-You'll need to add `ion-google-place` as a dependency on your Ionic app:
+Followed by ion-google-place:
+
+`<script type="text/javascript" src="lib/ion-google-place/ion-google-place.js"></script>`
+
+
+You'll also need to add `ion-google-place` as a dependency in your Ionic app:
 ```javascript
 angular.module('myApp', [
   'ionic',
@@ -27,11 +39,20 @@ angular.module('myApp', [
 ]);
 ```
 
-That's pretty much it. Now you can use the directive like so:
-`<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" />`
+# Usage
 
-The 'current-location' attribute adds the option of choosing your device's current location from the list of results.
+### ng-model (Required)
+Used to store the Google Geocoding result object (See api documentation for object description https://developers.google.com/maps/documentation/javascript/geocoding#GeocodingResults)
 
-example:  `<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" current-location="true" />`
+```<ion-google-place ng-model="geocodeObject"/>```
 
-the acceptable value fot the attribute current-location is true or false.
+### current-location (Optional)
+Setting to "true" will add the option of quick-selecting the device's current location as the address to geocode
+
+```<ion-google-place ng-model="geocodeObject" current-location="true"/>```
+
+### geocode-options (Optional)
+Passes geocode options to the directive. Useful when you want to restrict search results to specific areas.
+The following example restricts results to Ireland(IE) only. See google's api documentation for more options. https://developers.google.com/maps/documentation/javascript/geocoding
+
+```<ion-google-place ng-model="geocodeObject" geocode-options="{componentRestrictions: {country: 'IE'}}/>```
