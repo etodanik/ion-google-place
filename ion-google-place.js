@@ -174,7 +174,7 @@ angular.module('ion-google-place', [])
                             }
                         }
 
-                        element.bind('click', onClick);
+                        element.bind('focus', onClick);
                         element.bind('touchend', onClick);
 
                         el.element.find('button').bind('click', onCancel);
