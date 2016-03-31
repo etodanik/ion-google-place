@@ -30,8 +30,8 @@ angular.module('myApp', [
 That's pretty much it. Now you can use the directive like so:
 `<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" />`
 
-You can in this version have the current location by adding to the directive "ion-google-place" the attribute currentLocation to true.
+The 'current-location' attribute adds the option of choosing your device's current location from the list of results.
 
 example:  `<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" current-location="true" />`
 
-the acceptable value fot the attribute currentLocation are true or false.
+the acceptable value fot the attribute current-location is true or false.
