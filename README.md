@@ -28,7 +28,9 @@ angular.module('myApp', [
 ```
 
 That's pretty much it. Now you can use the directive like so:
-`<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" />`
+`<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" search-placeholder="Enter an address, Apt# and ZIP"/>`
+
+The main placeholder attribute is for the placeholder text in the view.  The `search-placeholder` attribute customises the placeholder in the actual entry popup.
 
 You can in this version have the current location by adding to the directive "ion-google-place" the attribute currentLocation to true.
 
