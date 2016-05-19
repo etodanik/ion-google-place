@@ -45,7 +45,7 @@ angular.module('ion-google-place', [])
                             '<ion-content class="has-header has-header">',
                                 '<ion-list>',
                                     '<ion-item type="item-text-wrap" ng-click="setCurrentLocation()" ng-if="displayCurrentLocation">',
-                                        'Use current location',
+                                        (attrs.labelCurrentLocation || 'Use current location'),
                                     '</ion-item>',
                                     '<ion-item ng-repeat="location in locations" type="item-text-wrap" ng-click="selectLocation(location)">',
                                         '{{location.formatted_address}}',
@@ -79,7 +79,8 @@ angular.module('ion-google-place', [])
 
                         scope.setCurrentLocation = function(){
                             var location = {
-                                formatted_address: 'getting current location...'
+                                formatted_address: (attrs.labelGettingCurrentLocation || 'getting current location...'),
+                                getting: true
                             };
                             ngModel.$setViewValue(location);
                             ngModel.$render();
