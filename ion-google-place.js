@@ -197,7 +197,10 @@ angular.module('ion-google-place', [])
                     ngModel.$render = function(){
                         if(!ngModel.$viewValue){
                             element.val('');
-                        } else {
+                        } else if (typeof(ngModel.$viewValue) === 'string') {
+                          element.val(ngModel.$viewValue);
+                        } 
+                        else {
                             element.val(ngModel.$viewValue.formatted_address || '');
                         }
                     };
