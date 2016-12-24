@@ -36,7 +36,7 @@ angular.module('ion-google-place', [])
                             '<div class="bar bar-header item-input-inset">',
                                 '<label class="item-input-wrapper">',
                                     '<i class="icon ion-ios7-search placeholder-icon"></i>',
-                                    '<input class="google-place-search" type="search" ng-model="searchQuery" placeholder="' + (attrs.searchPlaceholder || 'Enter an address, place or ZIP code') + '">',
+                                    '<input class="google-place-search" ng-model-options="{debounce: 350}" type="search" ng-model="searchQuery" placeholder="' + (attrs.searchPlaceholder || 'Enter an address, place or ZIP code') + '">',
                                 '</label>',
                                 '<button class="button button-clear">',
                                     attrs.labelCancel || 'Cancel',
@@ -134,7 +134,7 @@ angular.module('ion-google-place', [])
                                         // @TODO: Figure out what to do when the geocoding fails
                                     }
                                 });
-                            }, 350); // we're throttling the input by 350ms to be nice to google's API
+                            }, 0); // we're throttling the input by 350ms to be nice to google's API
                         });
 
                         var onClick = function(e){
