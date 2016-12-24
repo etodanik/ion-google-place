@@ -27,6 +27,9 @@ angular.module('myApp', [
 ]);
 ```
 
+You'll also have to include `ion-google-place.js` in your Ionic app, probably near where you added the Google Maps API script:
+`<script src="path/to/your/libfolder/ion-google-place/ion-google-place.js"></script>`
+
 That's pretty much it. Now you can use the directive like so:
 `<ion-google-place placeholder="Enter an address, Apt# and ZIP" ng-model="location" search-placeholder="Enter an address, Apt# and ZIP"/>`
 
