@@ -6,6 +6,23 @@
     left: 0;
     z-index: 20;
     display: none;
+    background: rgba(0,0,0,0.4);
+}
+
+.ion-google-place-container .spinner-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 30px;
+    height: 30px;
+    z-index: 10;
+}
+
+.ion-google-place-container .spinner-container .spinner{
+    stroke: #eee;
 }
 
 
