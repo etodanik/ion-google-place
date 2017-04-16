@@ -7,7 +7,7 @@ Ionic directive for a location dropdown that utilizes google maps
 
 This is a simple directive for an autocomplete overlay location field built for Ionic Framework.
 
-#Installation
+# Installation
 
 Installation should be dead simple, you can grab a copy from bower:
 ```bash
