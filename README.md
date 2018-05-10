@@ -13,6 +13,12 @@ Installation should be dead simple, you can grab a copy from bower:
 ```bash
 bower install ion-google-place
 ```
+Note:
+In case the installation does not work, you can also try to directly add the following into your index.html file
+```
+<script src="bower_component/ion-google-place/ion-google-place.js"></script>
+<link href="bower_component/ion-google-place/ion-google-place.css">
+```
 
 Or clone this repository.
 
